@@ -8,19 +8,29 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid Background="{ThemeResource SystemControlChromeHighAcrylicWindowMediumBrush}">
-        <Button
-            x:Name="getWallpaperButton"
-            Content="Get Wallpaper"
-            FontSize="15"
-            Margin="0,0,0,48"
-            VerticalAlignment="Center" HorizontalAlignment="Center"
-            Height="32" Width="120" />
+        <StackPanel VerticalAlignment="Center">
+            <Image
+                x:Name="wallpaperImage"
+                HorizontalAlignment="Center"
+                Width="Auto"
+                MinHeight="0" MaxHeight="536" />
+            
+            <TextBox
+                x:Name="wallpaperUrlTextBox"
+                FontSize="15" TextAlignment="Center"
+                Margin="0,12,0,0"
+                HorizontalAlignment="Center"
+                Height="32" Width="480" />
 
-        <TextBox
-            x:Name="wallpaperUrlTextBox"
-            FontSize="15" TextAlignment="Center"
-            Margin="0,48,0,0"
-            VerticalAlignment="Center" HorizontalAlignment="Center"
-            Height="32" Width="480"/>
+            <Button
+                x:Name="getWallpaperButton"
+                Content="Get Wallpaper"
+                FontSize="15"
+                Margin="0,24,0,0"
+                HorizontalAlignment="Center"
+                Height="32" Width="120" />
+
+        </StackPanel>
+        
     </Grid>
 </Page>

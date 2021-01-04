@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Wallddit.Core.Services
     /// </summary>
     public static class HttpDataService
     {
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient _client = new HttpClient();
 
         /// <summary>
         /// Send a GET request to the specified Uri and return a deserialized object from the response body in an asynchronous operation.
@@ -26,13 +27,46 @@ namespace Wallddit.Core.Services
             T result = default;
 
             AddAuthorizationHeader(accessToken);
-            var json = await client.GetStringAsync(uri).ConfigureAwait(false);
+            var json = await _client.GetStringAsync(uri).ConfigureAwait(false);
             result = await Task.Run(() => JsonConvert.DeserializeObject<T>(json)).ConfigureAwait(false);
 
             return result;
         }
 
+        /// <summary>
+        /// Downloads an image asynchronously from the <paramref name="uri"/> and places it in the specified <paramref name="directoryPath"/> with the specified <paramref name="fileName"/>.
+        /// </summary>
+        /// <param name="directoryPath">The relative or absolute path to the directory to place the image in.</param>
+        /// <param name="fileName">The name of the file without the file extension.</param>
+        /// <param name="uri">The URI for the image to download.</param>
+        /// <param name="accessToken">(optional) The token to be passed along the GET request.</param>
+        /// <returns>Returns the absolute path to the downloaded image.</returns>
+        public static async Task<string> DownloadImageAsync(string directoryPath, string fileName, Uri uri, string accessToken = null)
+        {
+            /*
+             * Thanks to MarcusOtter for providing the code
+             * used in DownloadImageAsync.
+             * See it at: https://gist.github.com/MarcusOtter/b9b4ee3fc7be04469fd20480daa86c38
+             */
+
+            AddAuthorizationHeader(accessToken);
+
+            // Get the file extension
+            var uriWithoutQuery = uri.GetLeftPart(UriPartial.Path);
+            var fileExtension = Path.GetExtension(uriWithoutQuery);
+
+            // Create file path and ensure directory exists
+            var path = Path.Combine(directoryPath, $"{fileName}{fileExtension}");
+            Directory.CreateDirectory(directoryPath);
+
+            // Download the image and write to the file
+            var imageBytes = await _client.GetByteArrayAsync(uri);
+            await File.WriteAllBytesAsync(path, imageBytes);
+
+            return path;
+        }
+
         private static void AddAuthorizationHeader(string token) =>
-            client.DefaultRequestHeaders.Authorization = String.IsNullOrWhiteSpace(token) ? null : new AuthenticationHeaderValue("Bearer", token);
+            _client.DefaultRequestHeaders.Authorization = String.IsNullOrWhiteSpace(token) ? null : new AuthenticationHeaderValue("Bearer", token);
     }
 }

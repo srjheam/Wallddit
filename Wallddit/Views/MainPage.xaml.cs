@@ -2,6 +2,8 @@
 using System.Reactive.Disposables;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 using Wallddit.ViewModels;
 
@@ -28,6 +30,13 @@ namespace Wallddit.Views
                     viewModel => viewModel.WallpaperUrl,
                     view => view.wallpaperUrlTextBox.Text)
                     .DisposeWith(disposables);
+
+                this.Bind(ViewModel,
+                    viewModel => viewModel.WallpaperSource,
+                    view => view.wallpaperImage.Source,
+                    this.BitmapImageToImageSource,
+                    this.ImageSourceToBitmapImage)
+                    .DisposeWith(disposables);
             });
         }
 
@@ -41,6 +50,16 @@ namespace Wallddit.Views
         {
             get => (MainViewModel)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
+        }
+
+        private ImageSource BitmapImageToImageSource(BitmapImage bm)
+        {
+            return bm;
+        }
+
+        private BitmapImage ImageSourceToBitmapImage(ImageSource imageSource)
+        {
+            return imageSource as BitmapImage;
         }
     }
 }
