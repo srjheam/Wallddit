@@ -21,11 +21,6 @@ namespace Wallddit.Views
 
             this.WhenActivated(disposables =>
             {
-                this.BindCommand(ViewModel,
-                    viewModel => viewModel.GetWallpaperCommand,
-                    view => view.getWallpaperButton)
-                    .DisposeWith(disposables);
-
                 this.Bind(ViewModel,
                     viewModel => viewModel.WallpaperUrl,
                     view => view.wallpaperUrlTextBox.Text)
@@ -36,6 +31,21 @@ namespace Wallddit.Views
                     view => view.wallpaperImage.Source,
                     this.BitmapImageToImageSource,
                     this.ImageSourceToBitmapImage)
+                    .DisposeWith(disposables);
+
+                this.BindCommand(ViewModel,
+                    viewModel => viewModel.GetWallpaperCommand,
+                    view => view.getWallpaperButton)
+                    .DisposeWith(disposables);
+
+                this.BindCommand(ViewModel,
+                    viewModel => viewModel.SetDesktopWallpaperCommand,
+                    view => view.setDesktopWallpaperButton)
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                    viewModel => viewModel.IsSetterAvailable,
+                    view => view.setDesktopWallpaperButton.IsEnabled)
                     .DisposeWith(disposables);
             });
         }
