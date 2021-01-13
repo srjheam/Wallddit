@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -9,6 +9,7 @@ using Windows.Storage;
 using Windows.System.UserProfile;
 using Windows.UI.Xaml.Media.Imaging;
 
+using Wallddit.Core;
 using Wallddit.Core.Reddit;
 using Wallddit.Core.Services;
 
@@ -18,28 +19,22 @@ namespace Wallddit.ViewModels
     {
         private readonly StorageFolder _appFolder;
         private readonly string _wallpaperFolder;
+        private readonly WallpaperProvider _wallpaperProvider;
 
-        private string _wallpaperUrl = String.Empty;
-        public string WallpaperUrl
-        {
-            get => _wallpaperUrl;
-            set => this.RaiseAndSetIfChanged(ref _wallpaperUrl, value);
-        }
+        [Reactive]
+        private Wallpaper Wallpaper { get; set; }
 
-        private BitmapImage _wallpaperSource = default;
-        public BitmapImage WallpaperSource
-        {
-            get => _wallpaperSource;
-            set => this.RaiseAndSetIfChanged(ref _wallpaperSource, value);
-        }
+        [ObservableAsProperty]
+        public string WallpaperUrl { get; }
 
-        private readonly ObservableAsPropertyHelper<bool> _isSetterAvailable;
-        public bool IsSetterAvailable => _isSetterAvailable.Value;
+        [ObservableAsProperty]
+        public BitmapImage WallpaperImage { get; }
+
+        [ObservableAsProperty]
+        public bool IsSetterAvailable { get; }
 
         public ReactiveCommand<Unit, Unit> GetWallpaperCommand { get; }
         public ReactiveCommand<Unit, Unit> SetDesktopWallpaperCommand { get; }
-
-        public APIWrapper APIWrapper { get; set; } = new APIWrapper();
 
         public MainViewModel()
         {
@@ -50,11 +45,17 @@ namespace Wallddit.ViewModels
             {
                 _appFolder.CreateFolderAsync(WALLPAPER_FOLDER_NAME).AsTask().GetAwaiter().GetResult();
             }
+            _wallpaperProvider = new WallpaperProvider();
 
-            _isSetterAvailable = this
-                .WhenAnyValue(x => x.WallpaperSource)
+            this.WhenAnyValue(x => x.Wallpaper.Image.UriSource.AbsoluteUri)
+                .ToPropertyEx(this, x => x.WallpaperUrl);
+
+            this.WhenAnyValue(x => x.Wallpaper.Image)
+                .ToPropertyEx(this, x => x.WallpaperImage);
+
+            this.WhenAnyValue(x => x.Wallpaper)
                 .Select(wallpaper => wallpaper != null)
-                .ToProperty(this, x => x.IsSetterAvailable);
+                .ToPropertyEx(this, x => x.IsSetterAvailable);
 
             GetWallpaperCommand = ReactiveCommand.CreateFromTask(GetWallpaperAsync);
             SetDesktopWallpaperCommand = ReactiveCommand.CreateFromTask(SetWallpaperAsync);
@@ -62,45 +63,22 @@ namespace Wallddit.ViewModels
 
         public async Task GetWallpaperAsync()
         {
-            var apiCallResponse = await APIWrapper.GetHotPostsAsync("wallpaper", new Dictionary<string, string>
-            {
-                ["limit"] = "1"
-            });
-            WallpaperUrl = apiCallResponse.data.children[0].data.url_overridden_by_dest;
+            var wallpaper = await _wallpaperProvider.GetFreshWallpaperAsync();
 
-            var wallpaperName = (string)apiCallResponse.data.children[0].data.name;
-            string wallpaperPath = null;
-            if (!IsWallpaperDownloaded(wallpaperName))
-            {
-                wallpaperPath = await HttpDataService.DownloadImageAsync(_wallpaperFolder, wallpaperName, new Uri(WallpaperUrl));
-            }
-            WallpaperSource = new BitmapImage(new Uri(wallpaperPath ?? GetDownloadedWallpaper(wallpaperName)));
+            var localPath = await HttpDataService.DownloadImageAsync(_wallpaperFolder, wallpaper.Id, wallpaper.Image.UriSource);
+            wallpaper.LocalSource = localPath;
+
+            Wallpaper = wallpaper;
         }
 
         public async Task SetWallpaperAsync()
         {
             if (UserProfilePersonalizationSettings.IsSupported())
             {
-                StorageFile wallpaper = await StorageFile.GetFileFromPathAsync(WallpaperSource.UriSource.AbsoluteUri);
+                StorageFile wallpaper = await StorageFile.GetFileFromPathAsync(Wallpaper.LocalSource);
                 UserProfilePersonalizationSettings profileSettings = UserProfilePersonalizationSettings.Current;
                 await profileSettings.TrySetWallpaperImageAsync(wallpaper);
             }
-        }
-
-        private string GetDownloadedWallpaper(string wallpaperName)
-        {
-            var wallpapers = Directory.GetFiles(_wallpaperFolder, $"{wallpaperName}.*");
-            if (wallpapers.Length > 0)
-            {
-                return wallpapers[0];
-            }
-            return null;
-        }
-
-        private bool IsWallpaperDownloaded(string wallpaperName)
-        {
-            var wallpapersCount = Directory.GetFiles(_wallpaperFolder, $"{wallpaperName}.*");
-            return wallpapersCount.Length > 0;
         }
     }
 }

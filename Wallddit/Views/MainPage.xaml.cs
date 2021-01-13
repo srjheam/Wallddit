@@ -1,9 +1,8 @@
 ﻿using ReactiveUI;
+using System;
 using System.Reactive.Disposables;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 
 using Wallddit.ViewModels;
 
@@ -21,16 +20,20 @@ namespace Wallddit.Views
 
             this.WhenActivated(disposables =>
             {
-                this.Bind(ViewModel,
+                this.OneWayBind(ViewModel,
                     viewModel => viewModel.WallpaperUrl,
-                    view => view.wallpaperUrlTextBox.Text)
+                    view => view.wallpaperUrlTextBox.Text,
+                    prop => prop ?? String.Empty)
                     .DisposeWith(disposables);
 
-                this.Bind(ViewModel,
-                    viewModel => viewModel.WallpaperSource,
-                    view => view.wallpaperImage.Source,
-                    this.BitmapImageToImageSource,
-                    this.ImageSourceToBitmapImage)
+                this.OneWayBind(ViewModel,
+                    viewModel => viewModel.WallpaperImage,
+                    view => view.wallpaperImage.Source)
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                    viewModel => viewModel.IsSetterAvailable,
+                    view => view.setDesktopWallpaperButton.IsEnabled)
                     .DisposeWith(disposables);
 
                 this.BindCommand(ViewModel,
@@ -41,11 +44,6 @@ namespace Wallddit.Views
                 this.BindCommand(ViewModel,
                     viewModel => viewModel.SetDesktopWallpaperCommand,
                     view => view.setDesktopWallpaperButton)
-                    .DisposeWith(disposables);
-
-                this.OneWayBind(ViewModel,
-                    viewModel => viewModel.IsSetterAvailable,
-                    view => view.setDesktopWallpaperButton.IsEnabled)
                     .DisposeWith(disposables);
             });
         }
@@ -60,16 +58,6 @@ namespace Wallddit.Views
         {
             get => (MainViewModel)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
-        }
-
-        private ImageSource BitmapImageToImageSource(BitmapImage bm)
-        {
-            return bm;
-        }
-
-        private BitmapImage ImageSourceToBitmapImage(ImageSource imageSource)
-        {
-            return imageSource as BitmapImage;
         }
     }
 }

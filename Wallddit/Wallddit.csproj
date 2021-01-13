@@ -160,6 +160,9 @@
     <PackageReference Include="ReactiveUI.Events">
       <Version>13.0.27</Version>
     </PackageReference>
+    <PackageReference Include="ReactiveUI.Fody">
+      <Version>13.0.38</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wallddit.Core\Wallddit.Core.csproj">
@@ -167,7 +170,6 @@
       <Name>Wallddit.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
