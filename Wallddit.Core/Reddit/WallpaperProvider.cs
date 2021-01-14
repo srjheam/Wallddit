@@ -22,7 +22,7 @@ namespace Wallddit.Core.Reddit
             _wallpapersPerCall = 100;
             _wallpapersHistory = new Queue<Wallpaper>();
 
-            SubredditSource = "walpaper";
+            SubredditSource = "wallpaper";
         }
 
         public async Task<Wallpaper> GetFreshWallpaperAsync()
@@ -35,12 +35,13 @@ namespace Wallddit.Core.Reddit
             dynamic redditLink = null;
             do
             {
-                var apiResponse = await _apiWrapper.GetHotPostsAsync("wallpaper", callParameters);
+                var apiResponse = await _apiWrapper.GetHotPostsAsync(SubredditSource, callParameters);
                 foreach (var link in apiResponse.data.children)
                 {
                     if (!_wallpapersHistory.Select(x => x.Id).Contains((string)link.data.name))
                     {
                         redditLink = link.data;
+                        break;
                     }
                 }
                 callParameters.Add("after", (string)apiResponse.data.after);
