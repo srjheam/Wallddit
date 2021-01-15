@@ -16,12 +16,6 @@ namespace Wallddit.Core
         /// Gets the Wallpaper's image.
         /// </summary>
         public BitmapImage Image { get; }
-        /// <summary>
-        /// Gets the local path of the wallpaper image.
-        /// </summary>
-        public string LocalSource { get; set; }
-
-        public Wallpaper() { }
 
         public Wallpaper(string id, string author, BitmapImage image)
         {

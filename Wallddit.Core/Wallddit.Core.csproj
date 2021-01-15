@@ -125,7 +125,7 @@
     <Compile Include="Reddit\APIWrapper.cs" />
     <Compile Include="Reddit\WallpaperProvider.cs" />
     <Compile Include="Services\HttpDataService.cs" />
-    <Compile Include="Wallpaper.cs" />
+    <Compile Include="Models\Wallpaper.cs" />
     <EmbeddedResource Include="Properties\Wallddit.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>

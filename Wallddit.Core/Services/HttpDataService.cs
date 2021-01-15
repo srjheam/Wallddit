@@ -39,9 +39,10 @@ namespace Wallddit.Core.Services
         /// <param name="directoryPath">The relative or absolute path to the directory to place the image in.</param>
         /// <param name="fileName">The name of the file without the file extension.</param>
         /// <param name="uri">The URI for the image to download.</param>
+        /// <param name="forceDownload">(optional) True if the image should be downloaded, regardless of whether it has already been downloaded.</param>
         /// <param name="accessToken">(optional) The token to be passed along the GET request.</param>
         /// <returns>Returns the absolute path to the downloaded image.</returns>
-        public static async Task<string> DownloadImageAsync(string directoryPath, string fileName, Uri uri, string accessToken = null)
+        public static async Task<string> DownloadImageAsync(string directoryPath, string fileName, Uri uri, bool forceDownload = false, string accessToken = null)
         {
             /*
              * Thanks to MarcusOtter for providing the code
@@ -59,9 +60,13 @@ namespace Wallddit.Core.Services
             var path = Path.Combine(directoryPath, $"{fileName}{fileExtension}");
             Directory.CreateDirectory(directoryPath);
 
-            // Download the image and write to the file
-            var imageBytes = await _client.GetByteArrayAsync(uri);
-            await File.WriteAllBytesAsync(path, imageBytes);
+            // Check if the image is already downloaded and avoid downloading it again
+            if (forceDownload || !File.Exists(path))
+            {
+                // Download the image and write to the file
+                var imageBytes = await _client.GetByteArrayAsync(uri);
+                await File.WriteAllBytesAsync(path, imageBytes);
+            }
 
             return path;
         }

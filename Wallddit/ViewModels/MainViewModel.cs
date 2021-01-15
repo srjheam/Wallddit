@@ -65,9 +65,6 @@ namespace Wallddit.ViewModels
         {
             var wallpaper = await _wallpaperProvider.GetFreshWallpaperAsync();
 
-            var localPath = await HttpDataService.DownloadImageAsync(_wallpaperFolder, wallpaper.Id, wallpaper.Image.UriSource);
-            wallpaper.LocalSource = localPath;
-
             Wallpaper = wallpaper;
         }
 
@@ -75,9 +72,11 @@ namespace Wallddit.ViewModels
         {
             if (UserProfilePersonalizationSettings.IsSupported())
             {
-                StorageFile wallpaper = await StorageFile.GetFileFromPathAsync(Wallpaper.LocalSource);
+                var imagePath = await HttpDataService.DownloadImageAsync(_wallpaperFolder, Wallpaper.Id, Wallpaper.Image.UriSource);
+                
+                StorageFile imageFile = await StorageFile.GetFileFromPathAsync(imagePath);
                 UserProfilePersonalizationSettings profileSettings = UserProfilePersonalizationSettings.Current;
-                await profileSettings.TrySetWallpaperImageAsync(wallpaper);
+                await profileSettings.TrySetWallpaperImageAsync(imageFile);
             }
         }
     }
