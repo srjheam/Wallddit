@@ -22,8 +22,8 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Padding="16" Spacing="12">
                 <Button
-                    x:Name="getWallpaperButton"
-                    Content="Get Wallpaper"
+                    x:Name="refreshWallpaperButton"
+                    Content="Refresh"
                     FontSize="15"
                     Width="228" />
 

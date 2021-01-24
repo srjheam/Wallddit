@@ -37,8 +37,8 @@ namespace Wallddit.Views
                     .DisposeWith(disposables);
 
                 this.BindCommand(ViewModel,
-                    viewModel => viewModel.GetWallpaperCommand,
-                    view => view.getWallpaperButton)
+                    viewModel => viewModel.RefreshWallpaperCommand,
+                    view => view.refreshWallpaperButton)
                     .DisposeWith(disposables);
 
                 this.BindCommand(ViewModel,

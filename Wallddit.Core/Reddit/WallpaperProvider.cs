@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.UI.Xaml.Media.Imaging;
 
 using Wallddit.Core.Extensions;
+using Wallddit.Core.Models;
+using Wallddit.Core.Services;
 
 namespace Wallddit.Core.Reddit
 {
@@ -12,20 +13,20 @@ namespace Wallddit.Core.Reddit
     {
         private readonly APIWrapper _apiWrapper;
         private readonly int _wallpapersPerCall;
-        private readonly Queue<Wallpaper> _wallpapersHistory;
+        private readonly SqliteDataService _wallpaperDb;
 
         public string SubredditSource { get; }
 
-        public WallpaperProvider()
+        public WallpaperProvider(string wallpaperDBPath)
         {
             _apiWrapper = new APIWrapper();
             _wallpapersPerCall = 100;
-            _wallpapersHistory = new Queue<Wallpaper>();
+            _wallpaperDb = new SqliteDataService(wallpaperDBPath);
 
             SubredditSource = "wallpaper";
         }
 
-        public async Task<Wallpaper> GetFreshWallpaperAsync()
+        public async Task<Wallpaper> GetWallpaperAsync()
         {
             var callParameters = new Dictionary<string, string>
             {
@@ -38,7 +39,7 @@ namespace Wallddit.Core.Reddit
                 var apiResponse = await _apiWrapper.GetHotPostsAsync(SubredditSource, callParameters);
                 foreach (var link in apiResponse.data.children)
                 {
-                    if (!_wallpapersHistory.Select(x => x.Id).Contains((string)link.data.name))
+                    if (!_wallpaperDb.GetWallpapers().Select(x => x.Id).Contains((string)link.data.name))
                     {
                         redditLink = link.data;
                         break;
@@ -47,13 +48,13 @@ namespace Wallddit.Core.Reddit
                 callParameters.Add("after", (string)apiResponse.data.after);
             } while (redditLink == null);
 
-            var wallpaper = GetWallpaperFromJson(redditLink);
-            _wallpapersHistory.Enqueue(wallpaper);
+            Wallpaper wallpaper = ParseWallpaperFromJson(redditLink);
+            _wallpaperDb.AddWallpaper(wallpaper);
 
             return wallpaper;
         }
 
-        private Wallpaper GetWallpaperFromJson(dynamic json)
+        private Wallpaper ParseWallpaperFromJson(dynamic json)
         {
             Uri wallpaperUri;
             try
@@ -65,11 +66,17 @@ namespace Wallddit.Core.Reddit
                 wallpaperUri = new Uri((string)json.url);
             }
 
-            var wallpaperId = (string)json.name;
-            var wallpaperAuthor = (string)json.author;
-            var wallpaperImage = new BitmapImage(wallpaperUri);
+            var wallpaper = new Wallpaper
+            {
+                Id = (string)json.name,
+                Title = (string)json.title,
+                Author = (string)json.author,
+                AuthorProfileUrl = $"https://www.reddit.com/user/{(string)json.author}/",
+                ImageUrl = wallpaperUri.AbsoluteUri,
+                SourceUrl = $"https://www.reddit.com{(string)json.permalink}",
+                Provider = "Reddit"
+            };
 
-            var wallpaper = new Wallpaper(wallpaperId, wallpaperAuthor, wallpaperImage);
             return wallpaper;
         }
 

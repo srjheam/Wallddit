@@ -9,71 +9,75 @@ using Windows.Storage;
 using Windows.System.UserProfile;
 using Windows.UI.Xaml.Media.Imaging;
 
-using Wallddit.Core;
+using Wallddit.Core.Extensions;
 using Wallddit.Core.Reddit;
 using Wallddit.Core.Services;
+using Wallddit.Core.Models;
 
 namespace Wallddit.ViewModels
 {
     public class MainViewModel : ReactiveObject
     {
-        private readonly StorageFolder _appFolder;
-        private readonly string _wallpaperFolder;
         private readonly WallpaperProvider _wallpaperProvider;
+        private readonly string _wallpaperCacheFolder;
+        private string _localImagePath;
 
         [Reactive]
         private Wallpaper Wallpaper { get; set; }
+
+        [Reactive]
+        public BitmapImage WallpaperImage { get; set; }
 
         [ObservableAsProperty]
         public string WallpaperUrl { get; }
 
         [ObservableAsProperty]
-        public BitmapImage WallpaperImage { get; }
-
-        [ObservableAsProperty]
         public bool IsSetterAvailable { get; }
 
-        public ReactiveCommand<Unit, Unit> GetWallpaperCommand { get; }
+        public ReactiveCommand<Unit, Unit> RefreshWallpaperCommand { get; }
         public ReactiveCommand<Unit, Unit> SetDesktopWallpaperCommand { get; }
 
         public MainViewModel()
         {
-            const string WALLPAPER_FOLDER_NAME = "wallpapers";
-            _appFolder = ApplicationData.Current.LocalFolder;
-            _wallpaperFolder = Path.Combine(_appFolder.Path, WALLPAPER_FOLDER_NAME);
-            if (!Directory.Exists(_wallpaperFolder))
-            {
-                _appFolder.CreateFolderAsync(WALLPAPER_FOLDER_NAME).AsTask().GetAwaiter().GetResult();
-            }
-            _wallpaperProvider = new WallpaperProvider();
+            string appFolderPath = ApplicationData.Current.LocalFolder.Path;
 
-            this.WhenAnyValue(x => x.Wallpaper.Image.UriSource.AbsoluteUri)
+            const string WALLPAPER_DB_FILE_NAME = "wallpaper.db";
+            string dbPath = Path.Combine(appFolderPath, WALLPAPER_DB_FILE_NAME);
+            _wallpaperProvider = new WallpaperProvider(dbPath);
+
+            const string WALLPAPER_CACHE_FOLDER_NAME = "wallpapers";
+            string wallpaperCachePath = Path.Combine(appFolderPath, WALLPAPER_CACHE_FOLDER_NAME);
+            _wallpaperCacheFolder = wallpaperCachePath;
+
+            this.WhenAnyValue(x => x.Wallpaper.ImageUrl)
                 .ToPropertyEx(this, x => x.WallpaperUrl);
-
-            this.WhenAnyValue(x => x.Wallpaper.Image)
-                .ToPropertyEx(this, x => x.WallpaperImage);
 
             this.WhenAnyValue(x => x.Wallpaper)
                 .Select(wallpaper => wallpaper != null)
                 .ToPropertyEx(this, x => x.IsSetterAvailable);
 
-            GetWallpaperCommand = ReactiveCommand.CreateFromTask(GetWallpaperAsync);
+            RefreshWallpaperCommand = ReactiveCommand.CreateFromTask(RefreshWallpaperAsync);
             SetDesktopWallpaperCommand = ReactiveCommand.CreateFromTask(SetWallpaperAsync);
+
+            RefreshWallpaperAsync();
         }
 
-        public async Task GetWallpaperAsync()
+        public async Task RefreshWallpaperAsync()
         {
-            var wallpaper = await _wallpaperProvider.GetFreshWallpaperAsync();
+            var wallpaper = await _wallpaperProvider.GetWallpaperAsync();
 
             Wallpaper = wallpaper;
+
+            _localImagePath = await HttpDataService.DownloadImageAsync(_wallpaperCacheFolder, Wallpaper.Id, Wallpaper.ImageUrl.ToUri());
+            WallpaperImage = new BitmapImage(_localImagePath.ToUri());
         }
 
         public async Task SetWallpaperAsync()
         {
             if (UserProfilePersonalizationSettings.IsSupported())
             {
-                var imagePath = await HttpDataService.DownloadImageAsync(_wallpaperFolder, Wallpaper.Id, Wallpaper.Image.UriSource);
-                
+                var imagePath = await HttpDataService.DownloadImageAsync(_wallpaperCacheFolder, Wallpaper.Id, Wallpaper.ImageUrl.ToUri());
+
                 StorageFile imageFile = await StorageFile.GetFileFromPathAsync(imagePath);
                 UserProfilePersonalizationSettings profileSettings = UserProfilePersonalizationSettings.Current;
                 await profileSettings.TrySetWallpaperImageAsync(imageFile);

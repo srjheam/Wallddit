@@ -1,27 +1,34 @@
-﻿using Windows.UI.Xaml.Media.Imaging;
-
-namespace Wallddit.Core
+﻿namespace Wallddit.Core.Models
 {
     public class Wallpaper
     {
         /// <summary>
-        /// Gets the Wallpaper's unique identificator
+        /// Gets the Wallpaper unique identificator
         /// </summary>
-        public string Id { get; }
+        public string Id;
         /// <summary>
-        /// Gets the author of the Wallpaper.
+        /// Gets the Wallpaper post title.
         /// </summary>
-        public string Author { get; }
+        public string Title;
         /// <summary>
-        /// Gets the Wallpaper's image.
+        /// Gets the name of the Wallpaper author.
         /// </summary>
-        public BitmapImage Image { get; }
-
-        public Wallpaper(string id, string author, BitmapImage image)
-        {
-            Id = id;
-            Author = author;
-            Image = image;
-        }
+        public string Author;
+        /// <summary>
+        /// Gets the url to the author profile.
+        /// </summary>
+        public string AuthorProfileUrl;
+        /// <summary>
+        /// Gets the Wallpaper image Url.
+        /// </summary>
+        public string ImageUrl;
+        /// <summary>
+        /// Gets the Wallpaper source url.
+        /// </summary>
+        public string SourceUrl;
+        /// <summary>
+        /// Gets the Wallpaper Provider.
+        /// </summary>
+        public string Provider;
     }
 }
