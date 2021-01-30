@@ -7,12 +7,12 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.System.UserProfile;
-using Windows.UI.Xaml.Media.Imaging;
 
 using Wallddit.Core.Extensions;
 using Wallddit.Core.Reddit;
 using Wallddit.Core.Services;
 using Wallddit.Core.Models;
+using Wallddit.Helpers;
 
 namespace Wallddit.ViewModels
 {
@@ -20,13 +20,9 @@ namespace Wallddit.ViewModels
     {
         private readonly WallpaperProvider _wallpaperProvider;
         private readonly string _wallpaperCacheFolder;
-        private string _localImagePath;
 
         [Reactive]
         private Wallpaper Wallpaper { get; set; }
-
-        [Reactive]
-        public BitmapImage WallpaperImage { get; set; }
 
         [ObservableAsProperty]
         public string WallpaperUrl { get; }
@@ -41,8 +37,7 @@ namespace Wallddit.ViewModels
         {
             string appFolderPath = ApplicationData.Current.LocalFolder.Path;
 
-            const string WALLPAPER_DB_FILE_NAME = "wallpaper.db";
-            string dbPath = Path.Combine(appFolderPath, WALLPAPER_DB_FILE_NAME);
+            string dbPath = DataAccessHelper.GetDatabasePath();
             _wallpaperProvider = new WallpaperProvider(dbPath);
 
             const string WALLPAPER_CACHE_FOLDER_NAME = "wallpapers";
@@ -67,9 +62,6 @@ namespace Wallddit.ViewModels
             var wallpaper = await _wallpaperProvider.GetWallpaperAsync();
 
             Wallpaper = wallpaper;
-
-            _localImagePath = await HttpDataService.DownloadImageAsync(_wallpaperCacheFolder, Wallpaper.Id, Wallpaper.ImageUrl.ToUri());
-            WallpaperImage = new BitmapImage(_localImagePath.ToUri());
         }
 
         public async Task SetWallpaperAsync()

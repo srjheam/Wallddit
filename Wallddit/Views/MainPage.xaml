@@ -5,9 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemControlChromeHighAcrylicWindowMediumBrush}">
 
-    <Grid Background="{ThemeResource SystemControlChromeHighAcrylicWindowMediumBrush}">
+    <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <Image
                 x:Name="wallpaperImage"
@@ -33,6 +33,15 @@
                     FontSize="15"
                     Width="228" />
             </StackPanel>
+
+            <Button
+                x:Name="openCollectionButton"
+                Content="Collection"
+                Click="openCollectionButton_Click"
+                FontSize="15"
+                Width="468"
+                HorizontalAlignment="Center" />
+            
         </StackPanel>
 
     </Grid>

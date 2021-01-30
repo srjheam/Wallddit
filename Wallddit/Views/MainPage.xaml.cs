@@ -3,7 +3,10 @@ using System;
 using System.Reactive.Disposables;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Navigation;
 
+using Wallddit.Core.Extensions;
 using Wallddit.ViewModels;
 
 namespace Wallddit.Views
@@ -17,6 +20,7 @@ namespace Wallddit.Views
         {
             this.InitializeComponent();
             ViewModel = new MainViewModel();
+            this.NavigationCacheMode = NavigationCacheMode.Enabled;
 
             this.WhenActivated(disposables =>
             {
@@ -27,8 +31,9 @@ namespace Wallddit.Views
                     .DisposeWith(disposables);
 
                 this.OneWayBind(ViewModel,
-                    viewModel => viewModel.WallpaperImage,
-                    view => view.wallpaperImage.Source)
+                    viewModel => viewModel.WallpaperUrl,
+                    view => view.wallpaperImage.Source,
+                    x => new BitmapImage(x.ToUri()))
                     .DisposeWith(disposables);
 
                 this.OneWayBind(ViewModel,
@@ -59,5 +64,8 @@ namespace Wallddit.Views
             get => (MainViewModel)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
+
+        private void openCollectionButton_Click(object sender, RoutedEventArgs args) =>
+            this.Frame.Navigate(typeof(GalleryPage));
     }
 }
