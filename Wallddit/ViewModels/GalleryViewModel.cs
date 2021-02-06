@@ -1,6 +1,7 @@
 ﻿using ReactiveUI;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Wallddit.Core.Models;
 using Wallddit.Core.Services;
@@ -18,22 +19,32 @@ namespace Wallddit.ViewModels
         public GalleryViewModel()
         {
             _dataService = DataAccessHelper.GetDatabase();
+            Groups = new List<GalleryGroup>();
 
-            FillGallery();
+            FillGalleryAsync();
         }
 
-        public void FillGallery()
+        public async Task FillGalleryAsync()
         {
-            var wallpaperHistory = _dataService.GetWallpapers().Reverse<Wallpaper>().ToList();
+            var wallpaperHistory = (await _dataService.ReadAllWallpapersAsync()).Reverse<Wallpaper>().ToList();
 
-            Groups = new List<GalleryGroup>
+            if (wallpaperHistory.Count == 0)
             {
-                new GalleryGroup
-                {
-                    Title = "History",
-                    Wallpapers = wallpaperHistory
-                }
-            };
+                return;
+            }
+
+            var savedWallpapers = wallpaperHistory.Where(x => x.IsSaved).ToList();
+            Groups.Add(new GalleryGroup
+            {
+                Title = "Saved",
+                Wallpapers = savedWallpapers
+            });
+
+            Groups.Add(new GalleryGroup
+            {
+                Title = "History",
+                Wallpapers = wallpaperHistory
+            });
         }
     }
 }

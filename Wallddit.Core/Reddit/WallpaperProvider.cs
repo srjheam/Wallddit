@@ -39,7 +39,7 @@ namespace Wallddit.Core.Reddit
                 var apiResponse = await _apiWrapper.GetHotPostsAsync(SubredditSource, callParameters);
                 foreach (var link in apiResponse.data.children)
                 {
-                    if (!_wallpaperDb.GetWallpapers().Select(x => x.Id).Contains((string)link.data.name))
+                    if (!(await _wallpaperDb.ReadAllWallpapersAsync()).Select(x => x.Id).Contains((string)link.data.name))
                     {
                         redditLink = link.data;
                         break;
@@ -49,7 +49,7 @@ namespace Wallddit.Core.Reddit
             } while (redditLink == null);
 
             Wallpaper wallpaper = ParseWallpaperFromJson(redditLink);
-            _wallpaperDb.AddWallpaper(wallpaper);
+            await _wallpaperDb.CreateWallpaperAsync(wallpaper);
 
             return wallpaper;
         }
@@ -71,6 +71,7 @@ namespace Wallddit.Core.Reddit
                 Id = (string)json.name,
                 Title = (string)json.title,
                 Author = (string)json.author,
+                IsSaved = false,
                 AuthorProfileUrl = $"https://www.reddit.com/user/{(string)json.author}/",
                 ImageUrl = wallpaperUri.AbsoluteUri,
                 SourceUrl = $"https://www.reddit.com{(string)json.permalink}",

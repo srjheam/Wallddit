@@ -28,10 +28,14 @@ namespace Wallddit.ViewModels
         public string WallpaperUrl { get; }
 
         [ObservableAsProperty]
-        public bool IsSetterAvailable { get; }
+        public bool IsThereWallpaper { get; }
+
+        [ObservableAsProperty]
+        public bool IsWallpaperSaved { get; }
 
         public ReactiveCommand<Unit, Unit> RefreshWallpaperCommand { get; }
         public ReactiveCommand<Unit, Unit> SetDesktopWallpaperCommand { get; }
+        public ReactiveCommand<Unit, Unit> SwitchWallpaperSavedStateCommand { get; }
 
         public MainViewModel()
         {
@@ -49,16 +53,20 @@ namespace Wallddit.ViewModels
 
             this.WhenAnyValue(x => x.Wallpaper)
                 .Select(wallpaper => wallpaper != null)
-                .ToPropertyEx(this, x => x.IsSetterAvailable);
+                .ToPropertyEx(this, x => x.IsThereWallpaper);
+
+            this.WhenAnyValue(x => x.Wallpaper.IsSaved)
+                .ToPropertyEx(this, x => x.IsWallpaperSaved);
 
             RefreshWallpaperCommand = ReactiveCommand.CreateFromTask(RefreshWallpaperAsync);
             SetDesktopWallpaperCommand = ReactiveCommand.CreateFromTask(SetWallpaperAsync);
-
-            RefreshWallpaperAsync();
+            SwitchWallpaperSavedStateCommand = ReactiveCommand.CreateFromTask(SwitchWallpaperSavedStateAsync);
         }
 
         public async Task RefreshWallpaperAsync()
         {
+            Wallpaper = null;
+
             var wallpaper = await _wallpaperProvider.GetWallpaperAsync();
 
             Wallpaper = wallpaper;
@@ -73,6 +81,20 @@ namespace Wallddit.ViewModels
                 StorageFile imageFile = await StorageFile.GetFileFromPathAsync(imagePath);
                 UserProfilePersonalizationSettings profileSettings = UserProfilePersonalizationSettings.Current;
                 await profileSettings.TrySetWallpaperImageAsync(imageFile);
+            }
+        }
+
+        public async Task SwitchWallpaperSavedStateAsync()
+        {
+            var db = DataAccessHelper.GetDatabase();
+
+            Wallpaper.IsSaved = !Wallpaper.IsSaved;
+
+            var result = await db.UpdateWallpaperAsync(Wallpaper);
+
+            if (!result)
+            {
+                Wallpaper.IsSaved = !Wallpaper.IsSaved;
             }
         }
     }

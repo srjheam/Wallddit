@@ -33,12 +33,23 @@ namespace Wallddit.Views
                 this.OneWayBind(ViewModel,
                     viewModel => viewModel.WallpaperUrl,
                     view => view.wallpaperImage.Source,
-                    x => new BitmapImage(x.ToUri()))
+                    x => x is null ? null : new BitmapImage(x.ToUri()))
                     .DisposeWith(disposables);
 
                 this.OneWayBind(ViewModel,
-                    viewModel => viewModel.IsSetterAvailable,
+                    viewModel => viewModel.IsThereWallpaper,
                     view => view.setDesktopWallpaperButton.IsEnabled)
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                    viewModel => viewModel.IsThereWallpaper,
+                    view => view.saveWallpaperButton.IsEnabled)
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                    viewModel => viewModel.IsWallpaperSaved,
+                    view => view.saveWallpaperButton.Content,
+                    x => x ? "Unsave" : "Save")
                     .DisposeWith(disposables);
 
                 this.BindCommand(ViewModel,
@@ -49,6 +60,11 @@ namespace Wallddit.Views
                 this.BindCommand(ViewModel,
                     viewModel => viewModel.SetDesktopWallpaperCommand,
                     view => view.setDesktopWallpaperButton)
+                    .DisposeWith(disposables);
+
+                this.BindCommand(ViewModel,
+                    viewModel => viewModel.SwitchWallpaperSavedStateCommand,
+                    view => view.saveWallpaperButton)
                     .DisposeWith(disposables);
             });
         }
@@ -65,7 +81,7 @@ namespace Wallddit.Views
             set => SetValue(ViewModelProperty, value);
         }
 
-        private void openCollectionButton_Click(object sender, RoutedEventArgs args) =>
+        private void openGalleryButton_Click(object sender, RoutedEventArgs args) =>
             this.Frame.Navigate(typeof(GalleryPage));
     }
 }

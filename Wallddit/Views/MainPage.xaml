@@ -34,14 +34,19 @@
                     Width="228" />
             </StackPanel>
 
-            <Button
-                x:Name="openCollectionButton"
-                Content="Collection"
-                Click="openCollectionButton_Click"
-                FontSize="15"
-                Width="468"
-                HorizontalAlignment="Center" />
-            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
+                <Button
+                    x:Name="saveWallpaperButton"
+                    FontSize="15"
+                    Width="228" />
+
+                <Button
+                    x:Name="openGalleryButton"
+                    Content="Gallery"
+                    Click="openGalleryButton_Click"
+                    FontSize="15"
+                    Width="228" />
+            </StackPanel>
         </StackPanel>
 
     </Grid>

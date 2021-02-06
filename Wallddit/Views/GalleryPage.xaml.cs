@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Controls;
 namespace Wallddit.Views
 {
     /// <summary>
-    /// The gallery page containing the wallpaper history and user favorites.
+    /// The gallery page containing the wallpaper history and user saved ones.
     /// </summary>
     public sealed partial class GalleryPage : Page, IViewFor<GalleryViewModel>
     {

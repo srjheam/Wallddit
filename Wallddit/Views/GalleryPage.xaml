@@ -18,7 +18,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="ZoomedInGroupHeaderTemplate" x:DataType="models:GalleryGroup">
-            <TextBlock Text="{x:Bind Title}" FontSize="32" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Text="{x:Bind Title}" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}" Style="{StaticResource SubtitleTextBlockStyle}" />
         </DataTemplate>
 
         <DataTemplate x:Key="ZoomedOutTemplate" x:DataType="wuxdata:ICollectionViewGroup">
@@ -33,12 +33,14 @@
         </Grid.RowDefinitions>
 
         <Rectangle Fill="{StaticResource SystemControlChromeMediumAcrylicElementMediumBrush}" Grid.Row="0" Width="Auto" />
-        <SemanticZoom x:Name="semanticZoom" Grid.Row="0" Grid.RowSpan="2" Margin="0,21,0,0">
+        <TextBlock Text="Gallery" FontSize="28" Style="{StaticResource TitleTextBlockStyle}"
+                   VerticalAlignment="Bottom" Grid.Row="0" Margin="52,0,0,8" />
+        <SemanticZoom x:Name="semanticZoom" Grid.Row="1">
             <SemanticZoom.ZoomedInView>
                 <GridView ItemsSource="{x:Bind cvsGroups.View}" ScrollViewer.IsHorizontalScrollChainingEnabled="False" SelectionMode="None"
-                          ItemTemplate="{StaticResource ZoomedInTemplate}" Padding="16">
+                          ItemTemplate="{StaticResource ZoomedInTemplate}" Padding="16" Margin="0,-16,0,0">
                     <GridView.GroupStyle>
-                        <GroupStyle HeaderTemplate="{StaticResource ZoomedInGroupHeaderTemplate}" />
+                        <GroupStyle HeaderTemplate="{StaticResource ZoomedInGroupHeaderTemplate}" HidesIfEmpty="True" />
                     </GridView.GroupStyle>
                 </GridView>
             </SemanticZoom.ZoomedInView>
