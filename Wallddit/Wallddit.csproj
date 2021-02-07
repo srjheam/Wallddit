@@ -168,13 +168,13 @@
       <Version>6.2.10</Version>
     </PackageReference>
     <PackageReference Include="ReactiveUI">
-      <Version>13.0.38</Version>
+      <Version>13.1.1</Version>
     </PackageReference>
     <PackageReference Include="ReactiveUI.Events">
-      <Version>13.0.38</Version>
+      <Version>13.1.1</Version>
     </PackageReference>
     <PackageReference Include="ReactiveUI.Fody">
-      <Version>13.0.38</Version>
+      <Version>13.1.1</Version>
     </PackageReference>
     <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3">
       <Version>2.0.4</Version>

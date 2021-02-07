@@ -140,10 +140,10 @@
       <Version>12.0.3</Version>
     </PackageReference>
     <PackageReference Include="ReactiveUI">
-      <Version>13.0.27</Version>
+      <Version>13.1.1</Version>
     </PackageReference>
     <PackageReference Include="ReactiveUI.Events">
-      <Version>13.0.27</Version>
+      <Version>13.1.1</Version>
     </PackageReference>
     <PackageReference Include="ReactiveUI.Fody">
       <Version>13.1.1</Version>
