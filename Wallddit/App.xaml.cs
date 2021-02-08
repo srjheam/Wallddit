@@ -11,6 +11,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
+using Wallddit.Helpers;
 using Wallddit.Views;
 
 namespace Wallddit
@@ -74,6 +75,8 @@ namespace Wallddit
                 // Extend acrylic
                 ExtendAcrylicIntoTitleBar();
             }
+
+            ThemeHelper.Initialize();
         }
 
         /// <summary>

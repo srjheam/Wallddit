@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource SystemControlChromeHighAcrylicWindowMediumBrush}">
+    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
 
     <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -43,11 +43,19 @@
                 <Button
                     x:Name="openGalleryButton"
                     Content="Gallery"
-                    Click="openGalleryButton_Click"
+                    Click="OpenGalleryButton_Click"
                     FontSize="15"
                     Width="228" />
             </StackPanel>
         </StackPanel>
 
+        <Button
+            x:Name="openSettingsButton"
+            Click="OpenSettingsButton_Click"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,8,8">
+            <SymbolIcon Symbol="Setting" />
+        </Button>
     </Grid>
 </Page>

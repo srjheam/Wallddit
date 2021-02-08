@@ -81,7 +81,10 @@ namespace Wallddit.Views
             set => SetValue(ViewModelProperty, value);
         }
 
-        private void openGalleryButton_Click(object sender, RoutedEventArgs args) =>
+        private void OpenGalleryButton_Click(object sender, RoutedEventArgs args) =>
             this.Frame.Navigate(typeof(GalleryPage));
+
+        private void OpenSettingsButton_Click(object sender, RoutedEventArgs e) =>
+            this.Frame.Navigate(typeof(SettingsPage));
     }
 }
