@@ -19,7 +19,9 @@
                       VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Visible">
             <StackPanel Margin="{StaticResource MediumLeftMargin}">
                 <Rectangle Height="96"/>
-                <muxc:RadioButtons x:Name="SwitchThemeRadioButtons" Header="Theme Mode:" FontSize="15" Margin="{StaticResource SmallTopBottomMargin}">
+                
+                <TextBlock Text="Theme Mode" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource MediumTopMargin}"/>
+                <muxc:RadioButtons x:Name="SwitchThemeRadioButtons" Margin="{StaticResource XSmallTopMargin}">
                     <RadioButton Content="Light">
                         <RadioButton.CommandParameter>
                             <xaml:ElementTheme>Light</xaml:ElementTheme>
@@ -37,28 +39,23 @@
                     </RadioButton>
                 </muxc:RadioButtons>
 
-                <TextBlock Text="About this app" Style="{ThemeResource SubtitleTextBlockStyle}" />
-
-                <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                    <TextBlock
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Style="{ThemeResource BodyTextBlockStyle}">
-                    <Run FontFamily="Segoe MDL2 Assets"
-                         Text="&#xE7F8;" />
-                    <Run Text=" Change your plain wallpaper into a brand new, delightful one." />
+                <TextBlock Text="About this app" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource MediumTopMargin}" />
+                <StackPanel Margin="{StaticResource SmallTopMargin}">
+                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}">
+                        <Run FontFamily="Segoe MDL2 Assets"
+                             Text="&#xE7F8;" />
+                        <Run Text=" Change your plain wallpaper into a brand new, delightful one." />
                     </TextBlock>
 
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}">
-                    <Run x:Name="AppDisplayName" FontWeight="Bold" />
-                    <Run Text=" - " />
-                    <Run x:Name="AppVersion" />
+                        <Run x:Name="AppDisplayName" FontWeight="Bold" />
+                        <Run Text=" - " />
+                        <Run x:Name="AppVersion" />
                     </TextBlock>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Margin="0,36,0,0" Spacing="8">
-                    <Button
-                    x:Name="FeedbackHubButton"
-                    Margin="{StaticResource XSmallTopMargin}">
+                <StackPanel Orientation="Horizontal" Margin="{StaticResource LargeTopMargin}" Spacing="8">
+                    <Button x:Name="FeedbackHubButton">
                         <TextBlock>
                         <Run FontFamily="Segoe MDL2 Assets"
                              Text="&#xE939;" />
@@ -66,9 +63,7 @@
                         </TextBlock>
                     </Button>
 
-                    <Button
-                    x:Name="GitHubRepoButton"
-                    Margin="{StaticResource XSmallTopMargin}">
+                    <Button x:Name="GitHubRepoButton">
                         <TextBlock>
                         <Run FontFamily="Segoe MDL2 Assets"
                              Text="&#xE8A7;" />
@@ -76,9 +71,9 @@
                         </TextBlock>
                     </Button>
                 </StackPanel>
-
             </StackPanel>
         </ScrollViewer>
+        
         <Rectangle Fill="{ThemeResource SystemControlAcrylicElementBrush}" Grid.Row="0" />
         <TextBlock Text="Settings" Style="{ThemeResource TitleTextBlockStyle}" Margin="24,0,0,8" Grid.Row="0" VerticalAlignment="Bottom" />
     </Grid>
