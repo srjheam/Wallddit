@@ -8,6 +8,7 @@
     xmlns:data="using:Wallddit.Core.Models"
     xmlns:models="using:Wallddit.Models"
     xmlns:wuxdata="using:Windows.UI.Xaml.Data"
+    Style="{StaticResource PageStyle}"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -18,11 +19,13 @@
         </DataTemplate>
 
         <DataTemplate x:Key="ZoomedInGroupHeaderTemplate" x:DataType="models:GalleryGroup">
-            <TextBlock Text="{x:Bind Title}" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}" Style="{StaticResource SubtitleTextBlockStyle}" />
+            <TextBlock Text="{x:Bind Title}" Foreground="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
+                       Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource XSmallTopMargin}" />
         </DataTemplate>
 
         <DataTemplate x:Key="ZoomedOutTemplate" x:DataType="wuxdata:ICollectionViewGroup">
-            <TextBlock Text="{x:Bind ((models:GalleryGroup)Group).Title}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="Wrap" />
+            <TextBlock Text="{x:Bind ((models:GalleryGroup)Group).Title}" TextWrapping="Wrap"
+                       Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource XSmallTopMargin}" />
         </DataTemplate>
     </Page.Resources>
 
@@ -32,13 +35,10 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Rectangle Fill="{StaticResource SystemControlChromeMediumAcrylicElementMediumBrush}" Grid.Row="0" Width="Auto" />
-        <TextBlock Text="Gallery" FontSize="28" Style="{StaticResource TitleTextBlockStyle}"
-                   VerticalAlignment="Bottom" Grid.Row="0" Margin="52,0,0,8" />
-        <SemanticZoom x:Name="semanticZoom" Grid.Row="1">
+        <SemanticZoom x:Name="semanticZoom" Grid.Row="1" Margin="{StaticResource MediumLeftMargin}">
             <SemanticZoom.ZoomedInView>
                 <GridView ItemsSource="{x:Bind cvsGroups.View}" ScrollViewer.IsHorizontalScrollChainingEnabled="False" SelectionMode="None"
-                          ItemTemplate="{StaticResource ZoomedInTemplate}" Padding="16" Margin="0,-16,0,0">
+                          ItemTemplate="{StaticResource ZoomedInTemplate}">
                     <GridView.GroupStyle>
                         <GroupStyle HeaderTemplate="{StaticResource ZoomedInGroupHeaderTemplate}" HidesIfEmpty="True" />
                     </GridView.GroupStyle>
@@ -49,5 +49,8 @@
                 <ListView ItemsSource="{x:Bind cvsGroups.View.CollectionGroups}" SelectionMode="None" ItemTemplate="{StaticResource ZoomedOutTemplate}" />
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>
+        
+        <Rectangle Fill="{ThemeResource SystemControlAcrylicElementBrush}" Grid.Row="0" />
+        <TextBlock Text="Gallery" Style="{ThemeResource TitleTextBlockStyle}" Margin="24,0,0,8" Grid.Row="0" VerticalAlignment="Bottom" />
     </Grid>
 </Page>
