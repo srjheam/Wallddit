@@ -22,12 +22,29 @@ namespace Wallddit.Views
             currentView.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
             currentView.BackRequested += CurrentView_BackRequested;
 
+            this.TaskTimeTriggerComboBox.SelectionChanged += ViewModel.TaskTimeTriggerComboBox_SelectionChanged;
+
             this.WhenActivated(disposables =>
             {
                 this.Bind(ViewModel,
                     viewModel => viewModel.IsWallpaperFlowOn,
                     view => view.WallpaperFlowToggleSwitch.IsOn)
                     .DisposeWith(disposables);
+
+                this.Bind(ViewModel,
+                    viewModel => viewModel.ComboBoxSelectedIndex,
+                    view => view.TaskTimeTriggerComboBox.SelectedIndex)
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                    viewModel => viewModel.ComboBoxItems,
+                    view => view.TaskTimeTriggerComboBox.ItemsSource)
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                    viewModel => viewModel.IsWallpaperFlowOn,
+                    view => view.TaskTimeTriggerComboBox.Visibility,
+                    x => x ? Visibility.Visible : Visibility.Collapsed);
 
                 this.BindCommand(ViewModel,
                     viewModel => viewModel.WallpaperFlowSwitchToggleCommand,

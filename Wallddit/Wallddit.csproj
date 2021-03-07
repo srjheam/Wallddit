@@ -124,6 +124,7 @@
     <Compile Include="Helpers\WallpaperFlowHelper.cs" />
     <Compile Include="Models\GalleryGroup.cs" />
     <Compile Include="Helpers\ThemeHelper.cs" />
+    <Compile Include="Models\WallpaperFlowSettings.cs" />
     <Compile Include="ViewModels\GalleryViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
@@ -201,6 +202,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Humanizer.Core">
+      <Version>2.8.26</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Data.Sqlite.Core">
       <Version>5.0.2</Version>
     </PackageReference>

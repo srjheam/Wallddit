@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 
+using Wallddit.Helpers;
+
 namespace Wallddit.BackgroundTasks
 {
     sealed class WallpaperFlowTask
@@ -26,7 +28,7 @@ namespace Wallddit.BackgroundTasks
                 IsNetworkRequested = true
             };
 
-            builder.SetTrigger(new TimeTrigger(15, false));
+            builder.SetTrigger(new TimeTrigger(WallpaperFlowHelper.GetCurrentSettings().TriggerFreshnessTime, false));
 
             builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
             builder.AddCondition(new SystemCondition(SystemConditionType.UserPresent));
@@ -44,6 +46,17 @@ namespace Wallddit.BackgroundTasks
 
             TaskRegistration.Value.Unregister(false);
         }
+
+        public async Task Reload()
+        {
+            if (!IsRegistered)
+            {
+                return;
+            }
+
+            Unregister();
+            await Register();
+        } 
 
         public Task Run(IBackgroundTaskInstance instance)
         {

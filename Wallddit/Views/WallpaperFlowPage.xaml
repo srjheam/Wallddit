@@ -25,6 +25,8 @@
                 </TextBlock>
 
                 <ToggleSwitch x:Name="WallpaperFlowToggleSwitch" Margin="{StaticResource MediumTopMargin}" />
+                <ComboBox x:Name="TaskTimeTriggerComboBox" DisplayMemberPath="Item1" SelectedValuePath="Item2"
+                          Header="Change the wallpaper every" Margin="{StaticResource SmallTopMargin}" />
             </StackPanel>
         </ScrollViewer>
 
