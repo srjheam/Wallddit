@@ -1,16 +1,10 @@
 ﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
-using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Windows.Storage;
-using Windows.System.UserProfile;
 
-using Wallddit.Core.Extensions;
-using Wallddit.Core.Reddit;
-using Wallddit.Core.Services;
 using Wallddit.Core.Models;
 using Wallddit.Helpers;
 
@@ -18,18 +12,15 @@ namespace Wallddit.ViewModels
 {
     public class MainViewModel : ReactiveObject
     {
-        private readonly WallpaperProvider _wallpaperProvider;
-        private readonly string _wallpaperCacheFolder;
+        private readonly WallpaperManager _wallpaperManager;
 
         [Reactive]
         private Wallpaper Wallpaper { get; set; }
 
         [ObservableAsProperty]
         public string WallpaperUrl { get; }
-
         [ObservableAsProperty]
         public bool IsThereWallpaper { get; }
-
         [ObservableAsProperty]
         public bool IsWallpaperSaved { get; }
 
@@ -39,49 +30,32 @@ namespace Wallddit.ViewModels
 
         public MainViewModel()
         {
-            string appFolderPath = ApplicationData.Current.LocalFolder.Path;
+            _wallpaperManager = new WallpaperManager();
+            UpdateWallpaperAsync();
 
-            string dbPath = DataAccessHelper.GetDatabasePath();
-            _wallpaperProvider = new WallpaperProvider(dbPath);
+            Observable.Interval(TimeSpan.FromMinutes(1)).Subscribe(async x => await UpdateWallpaperAsync());
 
-            const string WALLPAPER_CACHE_FOLDER_NAME = "wallpapers";
-            string wallpaperCachePath = Path.Combine(appFolderPath, WALLPAPER_CACHE_FOLDER_NAME);
-            _wallpaperCacheFolder = wallpaperCachePath;
-
-            this.WhenAnyValue(x => x.Wallpaper.ImageUrl)
+            this.WhenAnyValue(x => x.Wallpaper)
+                .Select(x => x.ImageUrl)
                 .ToPropertyEx(this, x => x.WallpaperUrl);
 
             this.WhenAnyValue(x => x.Wallpaper)
                 .Select(wallpaper => wallpaper != null)
                 .ToPropertyEx(this, x => x.IsThereWallpaper);
 
-            this.WhenAnyValue(x => x.Wallpaper.IsSaved)
+            this.WhenAnyValue(x => x.Wallpaper)
+                .Select(x => x.IsSaved)
                 .ToPropertyEx(this, x => x.IsWallpaperSaved);
 
-            RefreshWallpaperCommand = ReactiveCommand.CreateFromTask(RefreshWallpaperAsync);
-            SetDesktopWallpaperCommand = ReactiveCommand.CreateFromTask(SetWallpaperAsync);
+            RefreshWallpaperCommand = ReactiveCommand.CreateFromTask(RefreshWallpaper);
+            SetDesktopWallpaperCommand = ReactiveCommand.CreateFromTask(async () => await _wallpaperManager.SetWallpaperAsDesktopWallpaperAsync());
             SwitchWallpaperSavedStateCommand = ReactiveCommand.CreateFromTask(SwitchWallpaperSavedStateAsync);
         }
 
-        public async Task RefreshWallpaperAsync()
+        public async Task RefreshWallpaper()
         {
-            Wallpaper = null;
-
-            var wallpaper = await _wallpaperProvider.GetWallpaperAsync();
-
+            var wallpaper = await _wallpaperManager.GetNextAsync();
             Wallpaper = wallpaper;
-        }
-
-        public async Task SetWallpaperAsync()
-        {
-            if (UserProfilePersonalizationSettings.IsSupported())
-            {
-                var imagePath = await HttpDataService.DownloadImageAsync(_wallpaperCacheFolder, Wallpaper.Id, Wallpaper.ImageUrl.ToUri());
-
-                StorageFile imageFile = await StorageFile.GetFileFromPathAsync(imagePath);
-                UserProfilePersonalizationSettings profileSettings = UserProfilePersonalizationSettings.Current;
-                await profileSettings.TrySetWallpaperImageAsync(imageFile);
-            }
         }
 
         public async Task SwitchWallpaperSavedStateAsync()
@@ -92,10 +66,21 @@ namespace Wallddit.ViewModels
 
             var result = await db.UpdateWallpaperAsync(Wallpaper);
 
-            if (!result)
+            if (result)
+            {
+                var tmp = Wallpaper;
+                Wallpaper = new Wallpaper();
+                Wallpaper = tmp;
+            }
+            else
             {
                 Wallpaper.IsSaved = !Wallpaper.IsSaved;
             }
+        }
+
+        async Task UpdateWallpaperAsync()
+        {
+            Wallpaper = await _wallpaperManager.GetCurrentWallpaperAsync();
         }
     }
 }

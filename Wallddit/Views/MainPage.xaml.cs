@@ -20,7 +20,6 @@ namespace Wallddit.Views
         {
             this.InitializeComponent();
             ViewModel = new MainViewModel();
-            this.NavigationCacheMode = NavigationCacheMode.Enabled;
 
             this.WhenActivated(disposables =>
             {

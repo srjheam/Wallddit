@@ -119,12 +119,18 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BackgroundTasks\WallpaperFlowTask.cs" />
     <Compile Include="Helpers\DataAccessHelper.cs" />
+    <Compile Include="Helpers\WallpaperFlowHelper.cs" />
     <Compile Include="Models\GalleryGroup.cs" />
     <Compile Include="Helpers\ThemeHelper.cs" />
     <Compile Include="ViewModels\GalleryViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\WallpaperFlowViewModel.cs" />
+    <Compile Include="Views\WallpaperFlowPage.xaml.cs">
+      <DependentUpon>WallpaperFlowPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GalleryPage.xaml.cs">
       <DependentUpon>GalleryPage.xaml</DependentUpon>
     </Compile>
@@ -135,6 +141,7 @@
     <Compile Include="Views\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WallpaperManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -175,6 +182,10 @@
     <Page Include="Styles\_Thickness.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\WallpaperFlowPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\GalleryPage.xaml">
       <SubType>Designer</SubType>

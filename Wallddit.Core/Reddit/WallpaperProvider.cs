@@ -13,20 +13,23 @@ namespace Wallddit.Core.Reddit
     {
         private readonly APIWrapper _apiWrapper;
         private readonly int _wallpapersPerCall;
-        private readonly SqliteDataService _wallpaperDb;
 
         public string SubredditSource { get; }
 
-        public WallpaperProvider(string wallpaperDBPath)
+        public WallpaperProvider()
         {
             _apiWrapper = new APIWrapper();
             _wallpapersPerCall = 100;
-            _wallpaperDb = new SqliteDataService(wallpaperDBPath);
 
             SubredditSource = "wallpaper";
         }
 
-        public async Task<Wallpaper> GetWallpaperAsync()
+        /// <summary>
+        /// Get a wallpaper from the current provider.
+        /// </summary>
+        /// <param name="exclusionList">The list of wallpaper Ids to be excluded from the results.</param>
+        /// <returns>A wallpaper from the provider.</returns>
+        public async Task<Wallpaper> GetWallpaperAsync(IEnumerable<string> exclusionList = null)
         {
             var callParameters = new Dictionary<string, string>
             {
@@ -39,7 +42,7 @@ namespace Wallddit.Core.Reddit
                 var apiResponse = await _apiWrapper.GetHotPostsAsync(SubredditSource, callParameters);
                 foreach (var link in apiResponse.data.children)
                 {
-                    if (!(await _wallpaperDb.ReadAllWallpapersAsync()).Select(x => x.Id).Contains((string)link.data.name))
+                    if (exclusionList is null || !exclusionList.Contains((string)link.data.name))
                     {
                         redditLink = link.data;
                         break;
@@ -49,7 +52,6 @@ namespace Wallddit.Core.Reddit
             } while (redditLink == null);
 
             Wallpaper wallpaper = ParseWallpaperFromJson(redditLink);
-            await _wallpaperDb.CreateWallpaperAsync(wallpaper);
 
             return wallpaper;
         }

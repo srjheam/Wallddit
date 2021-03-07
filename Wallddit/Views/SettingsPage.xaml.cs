@@ -25,6 +25,11 @@ namespace Wallddit.Views
 
             this.WhenActivated(disposables =>
             {
+                this.Bind(ViewModel,
+                    viewModel => viewModel.IsWallpaperFlowOn,
+                    view => view.WallpaperFlowToggleSwitch.IsOn)
+                    .DisposeWith(disposables);
+
                 this.OneWayBind(ViewModel,
                     viewModel => viewModel.SelectedTheme,
                     view => view.SwitchThemeRadioButtons.SelectedIndex)
@@ -46,6 +51,11 @@ namespace Wallddit.Views
                    viewModel => viewModel.FeedbackLinkVisibility,
                    view => view.FeedbackHubButton.Visibility)
                    .DisposeWith(disposables);
+
+                this.BindCommand(ViewModel,
+                    viewModel => viewModel.WallpaperFlowSwitchToggleCommand,
+                    view => view.WallpaperFlowToggleSwitch)
+                    .DisposeWith(disposables);
 
                 this.BindCommand(ViewModel,
                     viewModel => viewModel.SwitchThemeCommand,
@@ -91,5 +101,8 @@ namespace Wallddit.Views
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
             this.Frame.Navigate(typeof(MainPage));
         }
+
+        private void OpenWallpaperFlowSettings_Click(object sender, RoutedEventArgs e) =>
+            this.Frame.Navigate(typeof(WallpaperFlowPage));
     }
 }

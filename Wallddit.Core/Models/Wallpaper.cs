@@ -1,49 +1,38 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-namespace Wallddit.Core.Models
+﻿namespace Wallddit.Core.Models
 {
-    public class Wallpaper : ReactiveObject
+    public class Wallpaper
     {
         /// <summary>
         /// Gets the Wallpaper unique identificator
         /// </summary>
-        [Reactive]
-        public string Id { get; set; }
+        public string Id;
         /// <summary>
         /// Gets the Wallpaper post title.
         /// </summary>
-        [Reactive]
-        public string Title { get; set; }
+        public string Title;
         /// <summary>
         /// Gets the name of the Wallpaper author.
         /// </summary>
-        [Reactive]
-        public string Author { get; set; }
+        public string Author;
         /// <summary>
         /// Gets a boolean briefing whether the wallpaper is marked as saved or not.
         /// </summary>
-        [Reactive]
-        public bool IsSaved { get; set; }
+        public bool IsSaved;
         /// <summary>
         /// Gets the url to the author profile.
         /// </summary>
-        [Reactive]
-        public string AuthorProfileUrl { get; set; }
+        public string AuthorProfileUrl;
         /// <summary>
         /// Gets the Wallpaper image Url.
         /// </summary>
-        [Reactive]
-        public string ImageUrl { get; set; }
+        public string ImageUrl;
         /// <summary>
         /// Gets the Wallpaper source url.
         /// </summary>
-        [Reactive]
-        public string SourceUrl { get; set; }
+        public string SourceUrl;
         /// <summary>
         /// Gets the Wallpaper Provider.
         /// </summary>
-        [Reactive]
-        public string Provider { get; set; }
+        public string Provider;
     }
 }

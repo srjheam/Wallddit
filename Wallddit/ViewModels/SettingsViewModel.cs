@@ -8,6 +8,9 @@ using System.Reactive;
 using System;
 using System.Reactive.Linq;
 using Wallddit.Helpers;
+using Windows.ApplicationModel.Background;
+using Windows.Storage;
+using Wallddit.BackgroundTasks;
 
 namespace Wallddit.ViewModels
 {
@@ -17,9 +20,12 @@ namespace Wallddit.ViewModels
         public readonly string AppDisplayName;
         public readonly string AppVersion;
 
+        [Reactive]
+        public bool IsWallpaperFlowOn { get; set; }
         [ObservableAsProperty]
         public int SelectedTheme { get; }
 
+        public ReactiveCommand<Unit, Unit> WallpaperFlowSwitchToggleCommand { get; }
         public ReactiveCommand<object, Unit> SwitchThemeCommand { get; }
         public ReactiveCommand<Unit, Unit> LaunchFeedbackHubCommand { get; }
         public ReactiveCommand<Unit, Unit> LaunchGitHubRepoCommand { get; }
@@ -32,6 +38,8 @@ namespace Wallddit.ViewModels
 
             AppDisplayName = "Wallddit";
             AppVersion = GetVersion();
+
+            IsWallpaperFlowOn = WallpaperFlowHelper.IsOn;
 
             this.WhenAnyValue(x => x._currentTheme)
                 .Select(theme =>
@@ -46,6 +54,7 @@ namespace Wallddit.ViewModels
                 })
                 .ToPropertyEx(this, x => x.SelectedTheme);
 
+            WallpaperFlowSwitchToggleCommand = ReactiveCommand.CreateFromTask(async () => await WallpaperFlowHelper.SwitchWallpaperFlowState());
             SwitchThemeCommand = ReactiveCommand.Create<object>(x => SwitchTheme(x));
             LaunchFeedbackHubCommand = ReactiveCommand.CreateFromTask(LaunchFeedbackHub);
             LaunchGitHubRepoCommand = ReactiveCommand.CreateFromTask(LaunchGitHubRepo);

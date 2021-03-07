@@ -19,8 +19,15 @@
                       VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Visible">
             <StackPanel Margin="{StaticResource MediumLeftMargin}">
                 <Rectangle Height="96"/>
-                
-                <TextBlock Text="Theme Mode" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource MediumTopMargin}"/>
+
+                <TextBlock Text="Wallpaper Flow" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource MediumTopMargin}" />
+                <TextBlock Text="Change wallpaper periodically" Margin="{StaticResource XSmallTopMargin}" />
+                <ToggleSwitch x:Name="WallpaperFlowToggleSwitch" Margin="{StaticResource XXSmallTopMargin}" />
+                <HyperlinkButton Margin="{StaticResource XXSmallTopMargin}" Click="OpenWallpaperFlowSettings_Click">
+                    <TextBlock Text="Wallpaper flow settings"/>
+                </HyperlinkButton>
+
+                <TextBlock Text="Theme Mode" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource MediumTopMargin}" />
                 <muxc:RadioButtons x:Name="SwitchThemeRadioButtons" Margin="{StaticResource XSmallTopMargin}">
                     <RadioButton Content="Light">
                         <RadioButton.CommandParameter>
@@ -54,7 +61,7 @@
                     </TextBlock>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Margin="{StaticResource LargeTopMargin}" Spacing="8">
+                <StackPanel Orientation="Horizontal" Margin="{StaticResource LargeTopBottomMargin}" Spacing="8">
                     <Button x:Name="FeedbackHubButton">
                         <TextBlock>
                         <Run FontFamily="Segoe MDL2 Assets"

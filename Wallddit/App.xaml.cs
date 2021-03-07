@@ -4,6 +4,7 @@ using System;
 using System.Reflection;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Core;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -11,6 +12,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
+using Wallddit.BackgroundTasks;
 using Wallddit.Helpers;
 using Wallddit.Views;
 
@@ -77,6 +79,15 @@ namespace Wallddit
             }
 
             ThemeHelper.Initialize();
+            WallpaperFlowHelper.Initialize();
+        }
+
+        protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+        {
+            base.OnBackgroundActivated(args);
+            IBackgroundTaskInstance taskInstance = args.TaskInstance;
+            var autoWallpaperChangeTask = new WallpaperFlowTask();
+            autoWallpaperChangeTask.Run(taskInstance);
         }
 
         /// <summary>
